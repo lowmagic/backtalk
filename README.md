@@ -12,7 +12,7 @@ Chimera's voice, over the OpenAI Realtime protocol.
 
 backtalk is a read-back speech server. It has no language model. It detects where speech starts and stops in the
 audio it's sent and transcribes each turn with NVIDIA's Parakeet TDT 0.6B v3, and it says the text it's given in
-Chimera's voice, through [chimera-voice-chat](https://github.com/lowmagic/chimera-voice-chat)'s speak build. A
+Chimera's voice, through [chimera-tts](https://github.com/lowmagic/chimera-tts)'s speak build. A
 session that asks it to answer on its own is refused. The [spec](docs/SPEC.md) says exactly what it sends and
 accepts.
 
@@ -45,8 +45,8 @@ at `/v1/realtime` and runs as uid 8765. It reads:
 
 | Variable | What it is |
 | --- | --- |
-| `BACKTALK_SPEAK` | The speak worker, `speak/speak.mjs` in chimera-voice-chat's build. Mount the build read-only, at `/srv/chimera` say, and set `/srv/chimera/speak/speak.mjs`. |
-| `BACKTALK_SPEAK_FLAGS` | Optional. The voice's settings, as flags for the speak worker, such as `--rate 0.9 --voicing 1.5 --plosives 1.5`: speed, more voice in b, d, g, v, z, and harder p, t, k, b, d, g (chimera-voice-chat's README lists them all). Left out, the build's defaults. A flag the build doesn't take stops backtalk at start, saying which. |
+| `BACKTALK_SPEAK` | The speak worker, `speak/speak.mjs` in chimera-tts's build. Mount the build read-only, at `/srv/chimera` say, and set `/srv/chimera/speak/speak.mjs`. |
+| `BACKTALK_SPEAK_FLAGS` | Optional. The voice's settings, as flags for the speak worker, such as `--rate 0.9 --voicing 1.5 --plosives 1.5`: speed, more voice in b, d, g, v, z, and harder p, t, k, b, d, g (chimera-tts's README lists them all). Left out, the build's defaults. A flag the build doesn't take stops backtalk at start, saying which. |
 | `BACKTALK_API_KEY` | Optional. When set, every connection must send `Authorization: Bearer <key>` or is refused with 401. Put the same key in the profile's `voice.speech_server.api_key`. |
 | `BACKTALK_CACHE` | Where the models download on first start (about 2.6 GB) and load from after. The image sets `/var/cache/backtalk`; mount a persistent volume there, writable by uid 8765. |
 
@@ -82,7 +82,7 @@ Check the name with `nvidia-smi --query-compute-apps=pid,process_name --format=c
 On a Mac, `uv run backtalk` runs it on the CPU, listening on port 8765 on every address:
 
 ```sh
-BACKTALK_CACHE=~/.cache/backtalk BACKTALK_SPEAK=../chimera-voice-chat/dist/speak/speak.mjs uv run backtalk
+BACKTALK_CACHE=~/.cache/backtalk BACKTALK_SPEAK=../chimera-tts/dist/speak/speak.mjs uv run backtalk
 ```
 
 `make check` runs the checks CI runs, offline, with a fake model and a fake speak worker. `make standards` checks
